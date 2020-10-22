@@ -8,8 +8,8 @@ import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
@@ -20,6 +20,7 @@ import com.imagepicker.media.ImageConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -45,32 +46,9 @@ public class MediaUtils
                 .append(".jpg")
                 .toString();
 
-        // defaults to Public Pictures Directory
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-        if (ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions")) 
-        {
-            final ReadableMap storageOptions = options.getMap("storageOptions");
-
-            if (storageOptions.hasKey("privateDirectory"))
-            {
-                boolean saveToPrivateDirectory = storageOptions.getBoolean("privateDirectory");
-                if (saveToPrivateDirectory)
-                {
-                    // if privateDirectory is set then save to app's private files directory
-                    path = reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                }
-            }
-
-            if (ReadableMapUtils.hasAndNotEmptyString(storageOptions, "path"))
-            {
-                path = new File(path, storageOptions.getString("path"));
-            }
-        }
-        else if (forceLocal)
-        {
-            path = reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        }
+        final File path = ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions") && !forceLocal
+                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                : reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
         File result = new File(path, filename);
 
@@ -122,7 +100,7 @@ public class MediaUtils
 
         if (photo == null)
         {
-            return imageConfig;
+            return null;
         }
 
         ImageConfig result = imageConfig;

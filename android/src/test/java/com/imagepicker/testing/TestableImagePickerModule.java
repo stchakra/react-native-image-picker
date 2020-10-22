@@ -1,13 +1,16 @@
 package com.imagepicker.testing;
 
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.imagepicker.ImagePickerModule;
+import com.imagepicker.ResponseHelper;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by rusfearuth on 10.04.17.
